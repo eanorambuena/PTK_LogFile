@@ -1,6 +1,8 @@
 import json
+
 def scape(t):
   return "\\"+t
+
 class Parser():
   def __init__(self,name="Parser"):
     self.sep=[',']
@@ -23,7 +25,7 @@ class Parser():
     return self.compare(x,self.vip)
 
 class LogFile:
-  def __init__(self,name="log",form=".lf"):
+  def __init__(self,name="log",form=".ptklf"):
     self.text=""
     self.name=name
     self.format=form
