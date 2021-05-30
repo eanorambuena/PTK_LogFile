@@ -1,4 +1,4 @@
-from Logs.logFile import *
+from logFile import *
 import json
 
 l=LogFile("log1")
@@ -15,6 +15,8 @@ l.reset()
 l.p.den=":"
 l.row(l.den("this text can not be printed"))
 l.read()
+
+l.h.reset()
 
 data = {}
 data['clients'] = []

@@ -1,4 +1,4 @@
-import json
+import json, os
 
 class Parser():
   def __init__(self,name="Parser"):
@@ -24,11 +24,38 @@ class Parser():
   def isDeny(self,x):
     return self.compare(x,self.den)
 
+class FilesTree:
+  def __init__(self,familyName="tree",form=".ptklf"):
+    self.name=familyName
+    self.format=form
+    self.reset()
+  def reset(self):
+    self.adress=self.name+"_hist"+self.format
+    try:
+      lines=self.getLines()
+      for i in lines:
+        os.remove(self.name+"_"+i+self.format)
+    except:
+      pass
+  def getLines(self):
+    h=open(self.adress,"r")
+    lines=h.readlines()
+    h.close()
+    return lines
+  def lastLine(self):
+    lines=self.getLines()
+    return lines[len (lines)-1]
+  def register(self,t):
+    with open(self.adress, 'a') as h:
+      h.write(t+"\r\n")
+
+
 class LogFile:
   def __init__(self,name="log",form=".ptklf"):
     self.name=name
     self.format=form
     self.reset()
+    self.h=FilesTree(self.name)
   def row(self,t):
     self.text=self.text+str(t)+","
   def section(self):
@@ -52,17 +79,13 @@ class LogFile:
       self.p=Parser()
   def export(self):
     try:
-      hist=open("hist.ptklf","r")
-      lines=hist.readlines()
-      i=int(lines[len (lines)-1])+1
-      hist.close()
+      i=int(self.h.lastLine())+1
     except:
       i=0
     f=open(self.name+"_"+str(i)+self.format,"w")
     f.write(self.text)
     f.close()
-    with open("hist.ptklf", 'a') as h:
-      h.write(str(i)+"\r\n")
+    self.h.register(str(i))
   def readFrom(self,adress,printYesOrNo=1):
     f=open(adress,"r")
     k=f.read()
@@ -92,10 +115,7 @@ class LogFile:
           t+=k[i]
   def read(self,name="|",printYesOrNo=1):
     self.export()
-    hist=open("hist.ptklf","r")
-    lines=hist.readlines()
-    i=int(lines[len (lines)-1])
-    hist.close()
+    i=int(self.h.lastLine())
     if name=="|":
       self.readFrom(self.name+"_"+str(i)+self.format,printYesOrNo)
     else:
