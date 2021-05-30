@@ -1,5 +1,5 @@
 from logFile import *
-import json
+import json, os
 
 l=LogFile("log1")
 l.row("hello[") #this [ can not be printed
@@ -37,3 +37,5 @@ data['clients'].append({
     'amount': 1.11})
 l2=LogFile("log2")
 l2.fromDict(data)
+
+os.remove()

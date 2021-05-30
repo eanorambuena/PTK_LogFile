@@ -25,7 +25,7 @@ class Parser():
     return self.compare(x,self.den)
 
 class FilesTree:
-  def __init__(self,familyName="tree",form=".ptklf"):
+  def __init__(self,familyName="tree",form=".pfcf"):
     self.name=familyName
     self.format=form
     self.reset()
@@ -34,7 +34,7 @@ class FilesTree:
     try:
       lines=self.getLines()
       for i in lines:
-        os.remove(self.name+"_"+i+self.format)
+        os.remove(self.name+"_"+str(i)+self.format)
     except:
       pass
   def getLines(self):
@@ -51,7 +51,7 @@ class FilesTree:
 
 
 class LogFile:
-  def __init__(self,name="log",form=".ptklf"):
+  def __init__(self,name="log",form=".pfcf"):
     self.name=name
     self.format=form
     self.reset()
