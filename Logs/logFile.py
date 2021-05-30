@@ -1,14 +1,12 @@
 import json
 
-def scape(t):
-  return "\\"+t
-
 class Parser():
   def __init__(self,name="Parser"):
     self.sep=[',']
     self.sec=['|',"["]
     self.ski=[']',"{","}","\""]
     self.vip=["\\"]
+    self.den=["~"]
     self.name=name
   def compare(self,x,arr):
     k = False
@@ -21,24 +19,50 @@ class Parser():
     return self.compare(x,self.sec)
   def skip(self,x):
     return self.compare(x,self.ski)
-  def isvip(self,x):
+  def isVip(self,x):
     return self.compare(x,self.vip)
+  def isDeny(self,x):
+    return self.compare(x,self.den)
 
 class LogFile:
   def __init__(self,name="log",form=".ptklf"):
-    self.text=""
     self.name=name
     self.format=form
-    self.adress=self.name+self.format
-    self.p=Parser()
+    self.reset()
   def row(self,t):
     self.text=self.text+str(t)+","
   def section(self):
     self.text=self.text+"|"
+  def vip(self,t):
+    s=self.p.vip[0]
+    text=""
+    for i in t:
+      text+=s+i
+    return text
+  def den(self,t):
+    s=self.p.den[0]
+    text=""
+    for i in t:
+      text+=s+i
+    return text
+  def reset(self,resetParserYesOrNo=1):
+    self.text=""
+    self.adress=self.name+self.format
+    if resetParserYesOrNo:
+      self.p=Parser()
   def export(self):
-    f=open(self.adress,"w")
+    try:
+      hist=open("hist.ptklf","r")
+      lines=hist.readlines()
+      i=int(lines[len (lines)-1])+1
+      hist.close()
+    except:
+      i=0
+    f=open(self.name+"_"+str(i)+self.format,"w")
     f.write(self.text)
     f.close()
+    with open("hist.ptklf", 'a') as h:
+      h.write(str(i)+"\r\n")
   def readFrom(self,adress,printYesOrNo=1):
     f=open(adress,"r")
     k=f.read()
@@ -51,20 +75,31 @@ class LogFile:
         if m==1:
           t+=k[i]
           m=0
-        if self.p.separator(k[i]):
+        elif m==2:
+          m=0
+        elif self.p.separator(k[i]):
           print(t)
           t=""
         elif self.p.section(k[i]):
           print("")
         elif  self.p.skip(k[i]):
           pass
-        elif  self.p.isvip(k[i]):
+        elif  self.p.isVip(k[i]):
           m=1
+        elif  self.p.isDeny(k[i]):
+          m=2
         else:
           t+=k[i]
-  def read(self,printYesOrNo=0):
+  def read(self,name="|",printYesOrNo=1):
     self.export()
-    self.readFrom(self.adress,1)
+    hist=open("hist.ptklf","r")
+    lines=hist.readlines()
+    i=int(lines[len (lines)-1])
+    hist.close()
+    if name=="|":
+      self.readFrom(self.name+"_"+str(i)+self.format,printYesOrNo)
+    else:
+      self.readFrom(name,printYesOrNo)
   def fromDict(self,data):
     name=self.name+".json"
     with open(name, 'w') as file:
